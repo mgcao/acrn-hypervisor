@@ -333,7 +333,7 @@ config UEFI_OS_LOADER_NAME
 
 config MCE_ON_PSC_WORKAROUND_DISABLED
 	bool "Force to disable software workaround for Machine Check Error on Page Size Change"
-	default n
+	default y
 	help
 	  By default, software workaround for Machine Check Error on Page Size Change is
 	  conditionally applied to the models that may be affected by the issue. However,

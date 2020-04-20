@@ -12,6 +12,7 @@
 #include <schedule.h>
 #include <profiling.h>
 #include <sprintf.h>
+#include <ept.h>
 #include <trace.h>
 #include <logmsg.h>
 
@@ -20,6 +21,10 @@ void vcpu_thread(struct thread_object *obj)
 	struct acrn_vcpu *vcpu = container_of(obj, struct acrn_vcpu, thread_obj);
 	uint32_t basic_exit_reason = 0U;
 	int32_t ret = 0;
+
+	if (has_rt_vm() == true && !is_rt_vm(vcpu->vm)) {
+		walk_ept_table(vcpu->vm, ept_flush_leaf_page, false);
+	}
 
 	do {
 		if (!is_lapic_pt_enabled(vcpu)) {

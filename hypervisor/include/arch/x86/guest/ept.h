@@ -129,6 +129,15 @@ void ept_del_mr(struct acrn_vm *vm, uint64_t *pml4_page, uint64_t gpa,
 void ept_flush_leaf_page(uint64_t *pge, uint64_t size);
 
 /**
+ * @brief Clear ACCESSED bit of the page entry
+ *
+ * @param[in] pge the pointer that points to the page entry
+ *
+ * @return None
+ */
+void ept_clear_accessed(uint64_t *pge);
+
+/**
  * @brief Get EPT pointer of the vm
  *
  * @param[in] vm the pointer that points to VM data structure
@@ -145,10 +154,11 @@ void *get_ept_entry(struct acrn_vm *vm);
  * @param[in] cb the pointer that points to walk_ept_table callback, the callback
  * 		will be invoked when getting a present page entry from EPT, and
  *		the callback could get the page entry and page size parameters.
+ * @param[in] only_accessed walk accessed ept entries or not
  *
  * @return None
  */
-void walk_ept_table(struct acrn_vm *vm, pge_handler cb);
+void walk_ept_table(struct acrn_vm *vm, pge_handler cb, bool only_accessed);
 
 /**
  * @brief EPT misconfiguration handling

@@ -388,6 +388,9 @@ static int32_t check_vmx_mmu_cap(void)
 	} else if (!pcpu_has_vmx_ept_cap(VMX_EPT_1GB_PAGE)) {
 		printf("%s, ept not support 1GB large page\n", __func__);
 		ret = -ENODEV;
+	} else if (!pcpu_has_vmx_ept_cap(VMX_EPT_AD)) {
+		printf("%s, accessed and dirty flags for EPT are not supported\n", __func__);
+		ret = -ENODEV;
 	} else {
 		/* No other state currently, do nothing */
 	}

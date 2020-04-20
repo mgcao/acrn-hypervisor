@@ -107,6 +107,8 @@
  */
 /* End of ept_mem_type */
 
+#define EPT_ACCESSED		(1UL << 8U)
+
 #define EPT_MT_MASK		(7UL << EPT_MT_SHIFT)
 #define EPT_VE			(1UL << 63U)
 /* EPT leaf entry bits (bit 52 - bit 63) should be maksed  when calculate PFN */

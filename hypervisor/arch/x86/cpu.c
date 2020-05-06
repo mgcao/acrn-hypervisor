@@ -320,6 +320,7 @@ static void start_pcpu(uint16_t pcpu_id)
 	/* Update the stack for pcpu */
 	stac();
 	write_trampoline_stack_sym(pcpu_id);
+	pr_err("prepare the stack for AP trampline code");
 	clac();
 
 	send_startup_ipi(INTR_CPU_STARTUP_USE_DEST, pcpu_id, startup_paddr);

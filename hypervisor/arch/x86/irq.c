@@ -292,7 +292,7 @@ static void handle_spurious_interrupt(uint32_t vector)
 
 	get_cpu_var(spurious)++;
 
-	pr_warn("Spurious vector: 0x%x.", vector);
+//	pr_warn("Spurious vector: 0x%x.", vector);
 
 	if (spurious_handler != NULL) {
 		spurious_handler(vector);

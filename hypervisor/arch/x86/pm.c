@@ -237,6 +237,7 @@ void host_enter_s3(const struct pm_s_state_data *sstate_data, uint32_t pm1a_cnt_
 
 void reset_host(void)
 {
+#if 0
 	struct acpi_generic_address *gas = &(host_reset_reg.reg);
 
 
@@ -263,6 +264,11 @@ void reset_host(void)
 		udelay(50U);
 		pio_write8(0xeU, 0xcf9U);
 	}
+#endif
+	/* making sure bit 2 (RST_CPU) is '0', when the reset command is issued. */
+	pio_write8(0x2U, 0xcf9U);
+	udelay(50U);
+	pio_write8(0xeU, 0xcf9U);
 
 	pr_fatal("%s(): can't reset host.", __func__);
 	while (1) {

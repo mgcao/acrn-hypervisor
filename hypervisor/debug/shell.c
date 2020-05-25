@@ -21,6 +21,7 @@
 #include <version.h>
 #include <shell.h>
 #include <vmcs.h>
+#include <io.h>
 
 #define TEMP_STR_SIZE		60U
 #define MAX_STR_SIZE		256U
@@ -1393,12 +1394,13 @@ static int32_t shell_trigger_crash(int32_t argc, char **argv)
 
 	(void)argc;
 	(void)argv;
-	snprintf(str, MAX_STR_SIZE, "trigger crash, divide by 0 ...\r\n");
+	snprintf(str, MAX_STR_SIZE, "trigger reboot by cmg ...\r\n");
 	shell_puts(str);
 
-	asm("movl $0x1, %eax");
-	asm("movl $0x0, %ecx");
-	asm("idiv  %ecx");
+	pio_write8(0x2U, 0xcf9U);
+	udelay(50U);
+	pio_write8(0xeU, 0xcf9U);
+
 
 	return 0;
 }

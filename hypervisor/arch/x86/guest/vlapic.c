@@ -1722,6 +1722,8 @@ int32_t vlapic_set_apicbase(struct acrn_vlapic *vlapic, uint64_t new)
 	uint64_t changed;
 	bool change_in_vlapic_mode = false;
 
+	pr_acrnlog("MSR to APIC: new=0x%lx, base=0x%lx, mode=0x%lx\n",
+		new, vlapic->msr_apicbase, APICBASE_LAPIC_MODE);
 	if (vlapic->msr_apicbase != new) {
 		changed = vlapic->msr_apicbase ^ new;
 		change_in_vlapic_mode = ((changed & APICBASE_LAPIC_MODE) != 0U);
@@ -1730,6 +1732,7 @@ int32_t vlapic_set_apicbase(struct acrn_vlapic *vlapic, uint64_t new)
 		 * TODO: Logic to check for change in Reserved Bits and Inject GP
 		 */
 
+		pr_acrnlog("come2 %d, 0x%lx\n", change_in_vlapic_mode, (new & APICBASE_LAPIC_MODE));
 		/*
 		 * Logic to check for change in Bits 11:10 for vLAPIC mode switch
 		 */

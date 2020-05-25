@@ -398,8 +398,8 @@ static void inject_msi_lapic_pt(struct acrn_vm *vm, const struct acrn_msi_entry 
 	vmsi_addr.full = vmsi->msi_addr;
 	vmsi_data.full = (uint32_t)vmsi->msi_data;
 
-	dev_dbg(DBG_LEVEL_LAPICPT, "%s: msi_addr 0x%016lx, msi_data 0x%016lx",
-		__func__, vmsi->msi_addr, vmsi->msi_data);
+//	dev_dbg(DBG_LEVEL_LAPICPT, "%s: msi_addr 0x%016lx, msi_data 0x%016lx",
+	//	__func__, vmsi->msi_addr, vmsi->msi_data);
 
 	if (vmsi_addr.bits.addr_base == MSI_ADDR_BASE) {
 		vdest = vmsi_addr.bits.dest_field;
@@ -410,7 +410,7 @@ static void inject_msi_lapic_pt(struct acrn_vm *vm, const struct acrn_msi_entry 
 		 * and handled by hardware.
 		 */
 		vlapic_calc_dest_lapic_pt(vm, &vdmask, false, vdest, phys);
-		dev_dbg(DBG_LEVEL_LAPICPT, "%s: vcpu destination mask 0x%016lx", __func__, vdmask);
+	//	dev_dbg(DBG_LEVEL_LAPICPT, "%s: vcpu destination mask 0x%016lx", __func__, vdmask);
 
 		vcpu_id = ffs64(vdmask);
 		while (vcpu_id != INVALID_BIT_INDEX) {

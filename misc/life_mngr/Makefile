@@ -51,3 +51,8 @@ ifneq ($(OUT_DIR),.)
 	rm -rf $(OUT_DIR)
 endif
 
+.PHONY: install
+install:
+	install -d $(DESTDIR)/usr/bin
+	install -t $(DESTDIR)/usr/bin $(OUT_DIR)/life_mngr
+	install -p -D -m 0644 $(OUT_DIR)/life_mngr.service $(DESTDIR)/usr/lib/acrn

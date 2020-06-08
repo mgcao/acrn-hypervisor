@@ -40,6 +40,7 @@ struct acrn_vm_config vm_configs[CONFIG_MAX_VM_NUM] = {
 	{	/* VM1 */
 		CONFIG_POST_STD_VM(1),
 		.cpu_affinity = VM1_CONFIG_CPU_AFFINITY,
+		.clos = { 0U },
 		.vuart[0] = {
 			.type = VUART_LEGACY_PIO,
 			.addr.port_base = COM1_BASE,
@@ -54,6 +55,7 @@ struct acrn_vm_config vm_configs[CONFIG_MAX_VM_NUM] = {
 		CONFIG_POST_RT_VM(1),
 		.guest_flags = 0UL,
 		.cpu_affinity = VM2_CONFIG_CPU_AFFINITY,
+		.clos = { 1U, 1U },
 		.vuart[0] = {
 			.type = VUART_LEGACY_PIO,
 			.addr.port_base = COM1_BASE,

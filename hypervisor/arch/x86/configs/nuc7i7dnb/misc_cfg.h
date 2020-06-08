@@ -8,7 +8,7 @@
 #define MISC_CFG_H
 
 #define MAX_PCPU_NUM	4U
-#define MAX_PLATFORM_CLOS_NUM	0U
+#define MAX_PLATFORM_CLOS_NUM	4U
 
 #define ROOTFS_0		"root=/dev/sda3 "
 #define ROOTFS_1		"root=/dev/nvme0n1p3 "

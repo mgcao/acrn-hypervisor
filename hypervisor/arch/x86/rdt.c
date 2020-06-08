@@ -16,6 +16,7 @@
 #include <board.h>
 #include <vm_config.h>
 #include <msr.h>
+#include "../cat_generic.h"
 
 const uint16_t hv_clos = 0U;
 /* RDT features can support different numbers of CLOS. Set the lowers numerical
@@ -35,7 +36,7 @@ static struct rdt_info res_cap_info[RDT_NUM_RESOURCES] = {
 		.clos_max = 0U,
 		.res_id = RDT_RESID_L3,
 		.msr_base = MSR_IA32_L3_MASK_BASE,
-		.platform_clos_array = platform_l3_clos_array, 
+		.platform_clos_array = platform_l3_clos_array,
 	},
 	[RDT_RESOURCE_L2] = {
 		.res.cache = {
@@ -56,10 +57,11 @@ static struct rdt_info res_cap_info[RDT_NUM_RESOURCES] = {
 		.clos_max = 0U,
 		.res_id = RDT_RESID_MBA,
 		.msr_base = MSR_IA32_MBA_MASK_BASE,
-		.platform_clos_array = platform_mba_clos_array, 
+		.platform_clos_array = platform_mba_clos_array,
 	},
 };
 
+#if 0
 /*
  * @pre res == RDT_RESOURCE_L3 || res == RDT_RESOURCE_L2
  */
@@ -78,7 +80,7 @@ static void init_cat_capability(int res)
 #ifdef CONFIG_CDP_ENABLED
 	res_cap_info[res].res.cache.is_cdp_enabled = ((ecx & 0x4U) != 0U);
 #else
-	res_cap_info[res].res.cache.is_cdp_enabled = false; 
+	res_cap_info[res].res.cache.is_cdp_enabled = false;
 #endif
 	if (res_cap_info[res].res.cache.is_cdp_enabled) {
 		res_cap_info[res].clos_max = (uint16_t)((edx & 0xffffU) >> 1U) + 1U;
@@ -105,14 +107,18 @@ static void init_mba_capability(int res)
 	res_cap_info[res].res.membw.delay_linear = ((ecx & 0x4U) != 0U) ? true : false;
 	res_cap_info[res].clos_max = (uint16_t)(edx & 0xffffU) + 1U;
 }
+#endif
 
 /*
- * @pre valid_clos_num > 0U 
+ * @pre valid_clos_num > 0U
  */
 void init_rdt_info(void)
 {
-	uint8_t i;
 	uint32_t eax = 0U, ebx = 0U, ecx = 0U, edx = 0U;
+
+
+#if 0
+	uint8_t i;
 
 	if (pcpu_has_cap(X86_FEATURE_RDT_A)) {
 		cpuid_subleaf(CPUID_RDT_ALLOCATION, 0U, &eax, &ebx, &ecx, &edx);
@@ -143,12 +149,31 @@ void init_rdt_info(void)
 			}
 		}
 	}
+#else
+	uint32_t ways;
+	/* get the ways of LLC cache  */
+	cpuid_subleaf(0x4U, 3U, &eax, &ebx, &ecx, &edx);
+	ways = (ebx >> 22U) + 1U;
+
+	res_cap_info[RDT_RESOURCE_L3].res.cache.cbm_len = (uint16_t)ways;
+	res_cap_info[RDT_RESOURCE_L3].res.cache.bitmask = 0U;
+	res_cap_info[RDT_RESOURCE_L3].clos_max = 4U;
+
+	if (ways == 16U) {
+		res_cap_info[RDT_RESOURCE_L3].res.cache.cbm_len = 16U;
+		res_cap_info[RDT_RESOURCE_L3].platform_clos_array = platform_l3_way16_clos_array;
+	} else if (ways == 12U) {
+		res_cap_info[RDT_RESOURCE_L3].res.cache.cbm_len = 12U;
+		res_cap_info[RDT_RESOURCE_L3].platform_clos_array = platform_l3_way12_clos_array;
+	}
+
+#endif
 }
 
 /*
  * @pre res < RDT_NUM_RESOURCES
  * @pre res_clos_info[i].mba_delay <= res_cap_info[res].res.membw.mba_max
- * @pre length of res_clos_info[i].clos_mask <= cbm_len && all 1's in clos_mask is continuous 
+ * @pre length of res_clos_info[i].clos_mask <= cbm_len && all 1's in clos_mask is continuous
  */
 static void setup_res_clos_msr(uint16_t pcpu_id, uint16_t res, struct platform_clos_info *res_clos_info)
 {
@@ -196,10 +221,12 @@ void setup_clos(uint16_t pcpu_id)
 uint64_t clos2pqr_msr(uint16_t clos)
 {
 	uint64_t pqr_assoc;
-
+#if 0
 	pqr_assoc = msr_read(MSR_IA32_PQR_ASSOC);
 	pqr_assoc = (pqr_assoc & 0xffffffffUL) | ((uint64_t)clos << 32U);
-
+#else
+	pqr_assoc = (uint64_t)clos;
+#endif
 	return pqr_assoc;
 }
 

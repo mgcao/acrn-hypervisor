@@ -21,6 +21,7 @@
 #include <vtd.h>
 #include <msr.h>
 #include <pci.h>
+
 static struct dmar_dev_scope drhd0_dev_scope[DRHD0_DEV_CNT] = {
 	{
 		.type   = DRHD0_DEVSCOPE0_TYPE,
@@ -73,6 +74,7 @@ struct dmar_info plat_dmar_info = {
 struct platform_clos_info platform_l2_clos_array[MAX_PLATFORM_CLOS_NUM];
 struct platform_clos_info platform_l3_clos_array[MAX_PLATFORM_CLOS_NUM];
 struct platform_clos_info platform_mba_clos_array[MAX_PLATFORM_CLOS_NUM];
+struct platform_clos_info* platform_clos_array = NULL;
 #endif
 
 static const struct cpu_cx_data board_cpu_cx[3] = {

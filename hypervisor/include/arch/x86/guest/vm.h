@@ -156,6 +156,12 @@ struct acrn_vm {
 	uint8_t vrtc_offset;
 
 	uint64_t intr_inject_delay_delta; /* delay of intr injection */
+
+#ifdef HV_DEBUG
+	uint64_t vmexit_cnt[64][TOTAL_ARRAY_LEVEL];
+	uint64_t vmexit_time[64][2]; /*0 for total latency, 1 for max latency */
+#endif
+
 } __aligned(PAGE_SIZE);
 
 /*

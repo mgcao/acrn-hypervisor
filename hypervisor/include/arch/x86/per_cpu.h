@@ -19,6 +19,13 @@
 #include <security.h>
 #include <vm_config.h>
 
+//#define MAX_VMEXIT_LEVEL 14 /* from 0 to 14 for counts*/
+//#define TOTAL_ARRAY_LEVEL (MAX_VMEXIT_LEVEL + 1)
+
+/* for 0 - 8 level, it use follow time, if level-9, it > level 8 max */
+//#define MAX_LATENCY_FOR_LEVEL(level)  us_to_ticks(1000 * (1 << (2 + level)))
+
+
 struct per_cpu_region {
 	/* vmxon_region MUST be 4KB-aligned */
 	uint8_t vmxon_region[PAGE_SIZE];
@@ -26,6 +33,12 @@ struct per_cpu_region {
 #ifdef HV_DEBUG
 	struct shared_buf *sbuf[ACRN_SBUF_ID_MAX];
 	char logbuf[LOG_MESSAGE_MAX_SIZE];
+
+	uint64_t vmexit_cnt[64][TOTAL_ARRAY_LEVEL];
+	uint64_t vmexit_time[64][2]; /*0 for total latency, 1 for max latency */
+
+	uint64_t resched_times;
+
 	uint32_t npk_log_ref;
 #endif
 	uint64_t irq_count[NR_IRQS];

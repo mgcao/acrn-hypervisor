@@ -27,7 +27,7 @@
 #define MAX_STR_SIZE		256U
 #define SHELL_PROMPT_STR	"ACRN:\\>"
 
-#define SHELL_LOG_BUF_SIZE		(PAGE_SIZE * MAX_PCPU_NUM / 2U)
+#define SHELL_LOG_BUF_SIZE		(PAGE_SIZE * MAX_PCPU_NUM)
 static char shell_log_buf[SHELL_LOG_BUF_SIZE];
 
 /* Input Line Other - Switch to the "other" input line (there are only two
@@ -52,6 +52,7 @@ static int32_t shell_cpuid(int32_t argc, char **argv);
 static int32_t shell_reboot(int32_t argc, char **argv);
 static int32_t shell_rdmsr(int32_t argc, char **argv);
 static int32_t shell_wrmsr(int32_t argc, char **argv);
+static int32_t shell_show_vmexit_profile(__unused int argc, __unused char **argv);
 
 static struct shell_cmd shell_cmds[] = {
 	{
@@ -155,6 +156,12 @@ static struct shell_cmd shell_cmds[] = {
 		.cmd_param	= SHELL_CMD_WRMSR_PARAM,
 		.help_str	= SHELL_CMD_WRMSR_HELP,
 		.fcn		= shell_wrmsr,
+	},
+	{
+		.str		= SHELL_CMD_VMEXIT,
+		.cmd_param	= SHELL_CMD_VMEXIT_PARAM,
+		.help_str	= SHELL_CMD_VMEXIT_HELP,
+		.fcn		= shell_show_vmexit_profile,
 	},
 };
 
@@ -1451,4 +1458,32 @@ static int32_t shell_wrmsr(int32_t argc, char **argv)
 	}
 
 	return ret;
+}
+
+extern void get_vmexit_profile_per_pcpu(char *str_arg, size_t str_max);
+extern void get_vmexit_details_per_pcpu(char *str_arg, size_t str_max);
+extern void get_vmexit_profile_per_vm(char *str_arg, size_t str_max);
+extern void get_vmexit_details_per_vm(char *str_arg, size_t str_max);
+extern void clear_vmexit_info_buffer(void);
+
+static int shell_show_vmexit_profile(__unused int argc, __unused char **argv)
+{
+	if ((argc == 2) && (strcmp(argv[1], "clear") == 0))
+	{
+		clear_vmexit_info_buffer();
+	}
+
+	get_vmexit_profile_per_pcpu(shell_log_buf, SHELL_LOG_BUF_SIZE);
+	shell_puts(shell_log_buf);
+
+	get_vmexit_details_per_pcpu(shell_log_buf, SHELL_LOG_BUF_SIZE);
+	shell_puts(shell_log_buf);
+
+	get_vmexit_profile_per_vm(shell_log_buf, SHELL_LOG_BUF_SIZE);
+	shell_puts(shell_log_buf);
+
+	get_vmexit_details_per_vm(shell_log_buf, SHELL_LOG_BUF_SIZE);
+	shell_puts(shell_log_buf);
+
+	return 0;
 }

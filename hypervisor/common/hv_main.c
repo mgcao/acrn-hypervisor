@@ -14,10 +14,11 @@
 #include <sprintf.h>
 #include <trace.h>
 #include <logmsg.h>
+#include <shell.h>
 
 void vcpu_thread(struct thread_object *obj)
 {
-#ifdef HV_DEBUG
+#ifdef ENABLE_SAMPLE_VMEXIT_INFO
 	uint64_t vmexit_begin = 0UL, vmexit_end = 0UL;
 #endif
 	struct acrn_vcpu *vcpu = container_of(obj, struct acrn_vcpu, thread_obj);
@@ -46,7 +47,7 @@ void vcpu_thread(struct thread_object *obj)
 		reset_event(&vcpu->events[VCPU_EVENT_VIRTUAL_INTERRUPT]);
 		profiling_vmenter_handler(vcpu);
 
-#ifdef HV_DEBUG
+#ifdef ENABLE_SAMPLE_VMEXIT_INFO
 		vmexit_end = rdtsc();
 		if (vmexit_begin != 0UL) {
 			uint64_t delta = vmexit_end - vmexit_begin;
@@ -86,7 +87,7 @@ void vcpu_thread(struct thread_object *obj)
 		basic_exit_reason = vcpu->arch.exit_reason & 0xFFFFU;
 		TRACE_2L(TRACE_VM_EXIT, basic_exit_reason, vcpu_get_rip(vcpu));
 
-#ifdef HV_DEBUG
+#ifdef ENABLE_SAMPLE_VMEXIT_INFO
 		vmexit_begin = rdtsc();
 		get_cpu_var(vmexit_cnt)[basic_exit_reason][TOTAL_ARRAY_LEVEL - 1]++;
 		vcpu->vm->vmexit_cnt[basic_exit_reason][TOTAL_ARRAY_LEVEL - 1]++;
@@ -149,7 +150,7 @@ void run_idle_thread(void)
 	cpu_dead();
 }
 
-#ifdef HV_DEBUG
+#ifdef ENABLE_SAMPLE_VMEXIT_INFO
 void get_vmexit_profile_per_pcpu(char *str_arg, size_t str_max)
 {
 	char *str = str_arg;

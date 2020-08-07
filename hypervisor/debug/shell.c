@@ -1460,14 +1460,9 @@ static int32_t shell_wrmsr(int32_t argc, char **argv)
 	return ret;
 }
 
-extern void get_vmexit_profile_per_pcpu(char *str_arg, size_t str_max);
-extern void get_vmexit_details_per_pcpu(char *str_arg, size_t str_max);
-extern void get_vmexit_profile_per_vm(char *str_arg, size_t str_max);
-extern void get_vmexit_details_per_vm(char *str_arg, size_t str_max);
-extern void clear_vmexit_info_buffer(void);
-
 static int shell_show_vmexit_profile(__unused int argc, __unused char **argv)
 {
+#ifdef ENABLE_SAMPLE_VMEXIT_INFO
 	if ((argc == 2) && (strcmp(argv[1], "clear") == 0))
 	{
 		clear_vmexit_info_buffer();
@@ -1484,6 +1479,8 @@ static int shell_show_vmexit_profile(__unused int argc, __unused char **argv)
 
 	get_vmexit_details_per_vm(shell_log_buf, SHELL_LOG_BUF_SIZE);
 	shell_puts(shell_log_buf);
-
+#else
+	printf("not support vmexit cmd!\n");
+#endif
 	return 0;
 }
